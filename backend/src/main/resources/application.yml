@@ -1,0 +1,36 @@
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3307/haritha_vastra?connectionTimeZone=UTC}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    locations: classpath:db/migration
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 8MB
+
+server:
+  port: 8080
+  error:
+    include-message: never
+  tomcat:
+    max-http-form-post-size: 8MB
+
+app:
+  allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
+  upload-dir: ${UPLOAD_DIR:./uploads}
+  admin-email: ${ADMIN_EMAIL:}
+  admin-password: ${ADMIN_PASSWORD:}
+  demo: ${DEMO_DATA:false}
+  shipping: ${SHIPPING_RUPEES:0.00}
+  tax-rate: ${TAX_RATE:0.00}
+  razorpay:
+    key-id: ${RAZORPAY_KEY_ID:}
+    key-secret: ${RAZORPAY_KEY_SECRET:}
+    webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:}
+    mode: ${PAYMENT_MODE:test}

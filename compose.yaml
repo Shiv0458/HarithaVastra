@@ -1,0 +1,48 @@
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: haritha_vastra
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      MYSQL_ROOT_HOST: "%"
+    ports:
+      - "127.0.0.1:3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'MYSQL_PWD="$${MYSQL_ROOT_PASSWORD}" mysqladmin ping -h localhost -u root --silent'
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  backend:
+    build: ./backend
+    env_file:
+      - .env
+    environment:
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      DB_URL: jdbc:mysql://db:3306/haritha_vastra?connectionTimeZone=UTC
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-demo}
+      UPLOAD_DIR: /app/uploads
+      ALLOWED_ORIGINS: http://localhost:3000,http://localhost:5173,http://192.168.29.79:3000
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
+  uploads:
